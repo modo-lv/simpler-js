@@ -1,1 +1,4 @@
-.idea/
+**/.idea/
+**/node_modules/chai
+**/node_modules/mocha
+.bin/
