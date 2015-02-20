@@ -1,0 +1,15 @@
+{
+  "name": "dependency-resolver",
+  "version": "0.0.1",
+  "description": "An AutoFac-like dependency injection manager for JavaScript.",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp tests"
+  },
+  "author": "MoDo",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/modo-lv/simpler-js"
+  }
+}
