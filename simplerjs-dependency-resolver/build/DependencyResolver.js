@@ -9,20 +9,20 @@
     function DependencyResolver(){
       this.newLifetime = bind$(this, 'newLifetime', prototype);
       this.prepare = bind$(this, 'prepare', prototype);
+      this.resolveAll = bind$(this, 'resolveAll', prototype);
       this.resolve = bind$(this, 'resolve', prototype);
       this.registerAll = bind$(this, 'registerAll', prototype);
       this.register = bind$(this, 'register', prototype);
-      this._keyFor = bind$(this, '_keyFor', prototype);
+      this._new = bind$(this, '_new', prototype);
+      /**
+      * Registered dependencies
+      */
       this._registry = {};
+      /**
+      * Created instances
+      */
+      this._instances = {};
     }
-    /**
-    * Registered dependencies
-    */
-    prototype._registry = {};
-    /**
-    * Created instances
-    */
-    prototype._instances = {};
     /**
     * Get the dependency registration name (key) for an object
     */
@@ -121,6 +121,24 @@
       }
       return instance;
     };
+    /**
+    * Call resolve() on an array of targets and return an array of resolved objects.
+    */
+    prototype.resolveAll = function(targets){
+      var results, i$, len$, target;
+      results = [];
+      for (i$ = 0, len$ = targets.length; i$ < len$; ++i$) {
+        target = targets[i$];
+        results.push(this.resolve(target));
+      }
+      return results;
+    };
+    /**
+    * Prepare for a resolution.
+    * Use to configure a resolution before executing it, for example, to add constructor parameters.
+    * @params {Object|String} target - Target dependency to prepare the resolution of
+    * @return {DependencyResolution} Resolution configuration object.
+    */
     prototype.prepare = function(target){
       return new DependencyResolution(this, target);
     };
@@ -130,9 +148,9 @@
     prototype.newLifetime = function(){
       var newLife, key, ref$, val, results$ = [];
       newLife = new DependencyResolver;
-      for (key in ref$ = _registry) {
+      for (key in ref$ = this._registry) {
         val = ref$[key];
-        results$.push(newLife._registry[key] = clone$(_registry[key]));
+        results$.push(newLife._registry[key] = clone$(this._registry[key]));
       }
       return results$;
     };

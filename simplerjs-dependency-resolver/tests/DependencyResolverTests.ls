@@ -3,6 +3,7 @@ require "./test-setup"
 ... <- describe "DependencyResolver"
 
 it "registers a function and resolves an instance", ->
+	dr = new Dr
 	class Test
 		-> @name = "TestInstance"
 
@@ -93,7 +94,7 @@ it "handles register() with provided keys", ->
 	dr = new Dr
 	dr.register "Test1", -> @.value = 1
 	dr.registerAll [
-		["Test2", -> @.value = 2],
+		["Test2", -> @.value = 2]
 		["Test3", -> @.value = 3]
 	]
 
@@ -112,3 +113,17 @@ it "throws correct error on missing key", ->
 	dr = new Dr
 
 	expect(-> dr.resolve "INotExist").to.Throw("Dependency not registered: \"INotExist\"")
+
+
+it "handles resolveAll() without errors", ->
+	dr = new Dr
+
+	dr.registerAll [
+		["Test1", -> @x = 12]
+		["Test2", -> @x = 34]
+	]
+
+	result = dr.resolveAll ["Test1" "Test2"]
+
+	expect result.0.x .to .equal 12
+	expect result.1.x .to .equal 34

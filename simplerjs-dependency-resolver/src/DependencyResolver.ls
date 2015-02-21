@@ -3,22 +3,20 @@ DependencyResolution = require "./DependencyResolution"
 
 class DependencyResolver
 	->
+		/**
+		* Registered dependencies
+		*/
 		@_registry = {}
 
-	/**
-	* Registered dependencies
-	*/
-	_registry: {}
-
-	/**
-	* Created instances
-	*/
-	_instances: {}
+		/**
+		* Created instances
+		*/
+		@_instances = {}
 
 	/**
 	* Get the dependency registration name (key) for an object
 	*/
-	_keyFor: (target) ~>
+	_keyFor: (target) ->
 		if typeof target == "function"
 			then target
 			else JSON.stringify(target)
@@ -29,7 +27,7 @@ class DependencyResolver
 	* @param {Function} func - Function to create new instance of
 	* @param {Array} args - Arguments to pass to the constructor
 	*/
-	_new: (func, args) ->
+	_new: (func, args) ~>
 		new (((a) -> func.apply(this, a)) <<< {prototype: func.prototype})(args)
 			.._dr = this
 
@@ -111,6 +109,24 @@ class DependencyResolver
 		return instance
 
 
+
+	/**
+	* Call resolve() on an array of targets and return an array of resolved objects.
+	*/
+	resolveAll: (targets) ~>
+		results = []
+		for target in targets
+			results.push @resolve(target)
+
+		return results
+
+
+	/**
+	* Prepare for a resolution.
+	* Use to configure a resolution before executing it, for example, to add constructor parameters.
+	* @params {Object|String} target - Target dependency to prepare the resolution of
+	* @return {DependencyResolution} Resolution configuration object.
+	*/
 	prepare: (target) ~>
 		new DependencyResolution this, target
 
@@ -119,8 +135,8 @@ class DependencyResolver
 	*/
 	newLifetime: ~>
 		newLife = new DependencyResolver
-		for key, val of _registry
-			newLife._registry[key] = ^^_registry[key]
+		for key, val of @_registry
+			newLife._registry[key] = ^^@_registry[key]
 
 
 if module? then module.exports = DependencyResolver
