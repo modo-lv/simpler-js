@@ -149,3 +149,17 @@ it "calls init method when set", ->
 	expect stub.called .to.equal true
 
 
+it "newLifetime() creates a copy with same configuration", ->
+	dr = new Dr
+
+	dr.register "Test", -> @val = 12; @
+
+	obj1 = dr.resolve "Test"
+
+	dr2 = dr.newLifetime!
+
+	obj2 = dr2.resolve "Test"
+
+	expect obj1 .to .not .equal obj2
+	expect obj1.val .to .equal 12
+	expect obj2.val .to .equal 12

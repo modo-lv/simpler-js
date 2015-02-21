@@ -156,13 +156,13 @@
     * Create a new instance of DependencyResolver with the same configuration
     */
     prototype.newLifetime = function(){
-      var newLife, key, ref$, val, results$ = [];
+      var newLife, key, ref$, val;
       newLife = new DependencyResolver;
       for (key in ref$ = this._registry) {
         val = ref$[key];
-        results$.push(newLife._registry[key] = clone$(this._registry[key]));
+        newLife._registry[key] = clone$(this._registry[key]);
       }
-      return results$;
+      return newLife;
     };
     return DependencyResolver;
   }());

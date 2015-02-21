@@ -149,6 +149,7 @@ class DependencyResolver
 		newLife = new DependencyResolver
 		for key, val of @_registry
 			newLife._registry[key] = ^^@_registry[key]
+		return newLife
 
 
 if module? then module.exports = DependencyResolver
