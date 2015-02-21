@@ -114,6 +114,9 @@
         instance = this._instances[key];
       }
       if (instance == null) {
+        if (typeof target !== 'function') {
+          throw new Error("Cannot create an instance of non-function: " + key);
+        }
         instance = this._new(target, args);
         if (config.instance.type === "lifetime") {
           this._instances[key] = instance;

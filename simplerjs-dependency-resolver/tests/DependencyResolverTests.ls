@@ -13,6 +13,7 @@ it "registers a function and resolves an instance", ->
 
 	expect instance .to .have .property "name"
 	expect instance.name .to .equal "TestInstance"
+	expect instance .to .have .property "_dr"
 
 
 it "resolves function with custom parameters", ->
@@ -73,7 +74,7 @@ it "correctly handles resolveAll() with string keys", ->
 	inst = dr.resolve "Test"
 
 	expect inst .to .be .an 'object'
-	expect inst .to .have .property "_dr"
+	expect inst._dr.constructor.displayName .to .equal "DependencyResolver"
 
 
 it "handles lifetime instances", ->
@@ -127,3 +128,11 @@ it "handles resolveAll() without errors", ->
 
 	expect result.0.x .to .equal 12
 	expect result.1.x .to .equal 34
+
+
+it "throws the right error on trying to instantiate non-function", ->
+	dr = new Dr
+	dr.register "ITest", {}
+
+	expect (-> dr.resolve "ITest") .to .throw "Cannot create an instance of non-function: \"ITest\""
+
