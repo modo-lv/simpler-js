@@ -20,16 +20,19 @@ class DependencyResolver
 	*/
 	_keyFor: (target) ~>
 		if typeof target == "function"
-			then target.constructor || target
+			then target
 			else JSON.stringify(target)
 
 	/**
-	* Create a new instance of a given function
+	* Create a new instance of a given function.
+	* New instance will have a property "_dr" that is set to this dependency resolver.
 	* @param {Function} func - Function to create new instance of
 	* @param {Array} args - Arguments to pass to the constructor
 	*/
 	_new: (func, args) ->
 		new (((a) -> func.apply(this, a)) <<< {prototype: func.prototype})(args)
+			.._dr = this
+
 
 	/**
 	* Register a new dependency.
@@ -37,6 +40,12 @@ class DependencyResolver
 	* @return {Object} Dependency configuration object for further dependency customization.
 	*/
 	register: (target) ~>
+		if target.constructor == Array
+			result = []
+			for t in target
+				result ++= @register t
+			return result
+
 		key = @_keyFor target
 
 		if @_registry[key]?

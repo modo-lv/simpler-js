@@ -27,21 +27,24 @@
     */
     prototype._keyFor = function(target){
       if (typeof target === "function") {
-        return target.constructor || target;
+        return target;
       } else {
         return JSON.stringify(target);
       }
     };
     /**
-    * Create a new instance of a given function
+    * Create a new instance of a given function.
+    * New instance will have a property "_dr" that is set to this dependency resolver.
     * @param {Function} func - Function to create new instance of
     * @param {Array} args - Arguments to pass to the constructor
     */
     prototype._new = function(func, args){
-      var ref$;
-      return new (ref$ = function(a){
+      var x$, ref$;
+      x$ = new (ref$ = function(a){
         return func.apply(this, a);
       }, ref$.prototype = func.prototype, ref$)(args);
+      x$._dr = this;
+      return x$;
     };
     /**
     * Register a new dependency.
@@ -49,7 +52,15 @@
     * @return {Object} Dependency configuration object for further dependency customization.
     */
     prototype.register = function(target){
-      var key;
+      var result, i$, len$, t, key;
+      if (target.constructor === Array) {
+        result = [];
+        for (i$ = 0, len$ = target.length; i$ < len$; ++i$) {
+          t = target[i$];
+          result = result.concat(this.register(t));
+        }
+        return result;
+      }
       key = this._keyFor(target);
       if (this._registry[key] != null) {
         throw new Error("Dependency already registered: " + key);
