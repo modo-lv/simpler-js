@@ -6,6 +6,12 @@
     var prototype = DependencyConfig.prototype, constructor = DependencyConfig;
     function DependencyConfig(obj){
       this.obj = obj;
+      this.noInstance = bind$(this, 'noInstance', prototype);
+      this.instancePerLifetime = bind$(this, 'instancePerLifetime', prototype);
+      this.instancePerDependency = bind$(this, 'instancePerDependency', prototype);
+      this.instance = {
+        type: "lifetime"
+      };
     }
     prototype.instance = {
       /**
@@ -38,5 +44,8 @@
   }());
   if (typeof module != 'undefined' && module !== null) {
     module.exports = DependencyConfig;
+  }
+  function bind$(obj, key, target){
+    return function(){ return (target || obj)[key].apply(obj, arguments) };
   }
 }).call(this);

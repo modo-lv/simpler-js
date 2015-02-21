@@ -35,18 +35,22 @@ class DependencyResolver
 
 
 	/**
-	* Register a new dependency.
-	* @param {Object|Function} Object or function to register.
+	* Register a new dependency. There are several ways this function can be called:
+	* 1. register(object) - registers an object/function using itself as the key
+	* 2. register(key, object) - registers an object/function using "key" as the key
+	* @param {String|Object|Function} key - String key of the object. Can be object itself.
+	* @param {Object|Function} Object or function to register. Only needed if "key" is provided.
 	* @return {Object} Dependency configuration object for further dependency customization.
 	*/
-	register: (target) ~>
-		if target.constructor == Array
-			result = []
-			for t in target
-				result ++= @register t
-			return result
+	register: (key, target) ~>
+		if not target?
+			target = key
+			key = null
 
-		key = @_keyFor target
+		if not target?
+			throw new Error "Can't register #{target} as a dependency."
+
+		key = @_keyFor key ? target
 
 		if @_registry[key]?
 			throw new Error "Dependency already registered: #{key}"
@@ -55,7 +59,28 @@ class DependencyResolver
 
 
 	/**
-	* Resolve a dependency
+	* Interprets arrays as register() calls, instead of dependencies.
+	* Lets you use syntax like registerAll([dependency1, [key2, dependency2]]).
+	* Will cause unpredictable results if used to register arrays as dependencies.
+	* @param {Array} targets - Array containing dependency registrations.
+	* @return {Array} An array of DependencyConfiguration-s for each registered dep.
+	*/
+	registerAll: (targets) ~>
+		results = []
+		for target in targets
+			if target.constructor == Array and target.length == 2
+				result = @register target.0, target.1
+			else
+				result = @register target
+
+			results .push result
+
+		return results
+
+
+	/**
+	* Resolve a dependency.
+	* Target can be a string key or an object.
 	* @param {Object} Dependency "class".
 	* @returns {Object} Instance
 	*/
@@ -70,16 +95,21 @@ class DependencyResolver
 		if not config?
 			throw new Error "Dependency not registered: #{key}"
 
+		target = config.obj
+
 		if config.instance.type == "none"
 			return target
 
 		if config.instance.type == "lifetime"
-			instance = @_registry[key]
+			instance = @_instances[key]
 
 		if not instance?
 			instance = @_new(target, args)
+			if config.instance.type == "lifetime"
+				@_instances[key] = instance
 
 		return instance
+
 
 	prepare: (target) ~>
 		new DependencyResolution this, target

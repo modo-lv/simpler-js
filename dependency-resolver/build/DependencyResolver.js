@@ -10,6 +10,7 @@
       this.newLifetime = bind$(this, 'newLifetime', prototype);
       this.prepare = bind$(this, 'prepare', prototype);
       this.resolve = bind$(this, 'resolve', prototype);
+      this.registerAll = bind$(this, 'registerAll', prototype);
       this.register = bind$(this, 'register', prototype);
       this._keyFor = bind$(this, '_keyFor', prototype);
       this._registry = {};
@@ -47,28 +48,51 @@
       return x$;
     };
     /**
-    * Register a new dependency.
-    * @param {Object|Function} Object or function to register.
+    * Register a new dependency. There are several ways this function can be called:
+    * 1. register(object) - registers an object/function using itself as the key
+    * 2. register(key, object) - registers an object/function using "key" as the key
+    * @param {String|Object|Function} key - String key of the object. Can be object itself.
+    * @param {Object|Function} Object or function to register. Only needed if "key" is provided.
     * @return {Object} Dependency configuration object for further dependency customization.
     */
-    prototype.register = function(target){
-      var result, i$, len$, t, key;
-      if (target.constructor === Array) {
-        result = [];
-        for (i$ = 0, len$ = target.length; i$ < len$; ++i$) {
-          t = target[i$];
-          result = result.concat(this.register(t));
-        }
-        return result;
+    prototype.register = function(key, target){
+      if (target == null) {
+        target = key;
+        key = null;
       }
-      key = this._keyFor(target);
+      if (target == null) {
+        throw new Error("Can't register " + target + " as a dependency.");
+      }
+      key = this._keyFor(key != null ? key : target);
       if (this._registry[key] != null) {
         throw new Error("Dependency already registered: " + key);
       }
       return this._registry[key] = new DependencyConfig(target);
     };
     /**
-    * Resolve a dependency
+    * Interprets arrays as register() calls, instead of dependencies.
+    * Lets you use syntax like registerAll([dependency1, [key2, dependency2]]).
+    * Will cause unpredictable results if used to register arrays as dependencies.
+    * @param {Array} targets - Array containing dependency registrations.
+    * @return {Array} An array of DependencyConfiguration-s for each registered dep.
+    */
+    prototype.registerAll = function(targets){
+      var results, i$, len$, target, result;
+      results = [];
+      for (i$ = 0, len$ = targets.length; i$ < len$; ++i$) {
+        target = targets[i$];
+        if (target.constructor === Array && target.length === 2) {
+          result = this.register(target[0], target[1]);
+        } else {
+          result = this.register(target);
+        }
+        results.push(result);
+      }
+      return results;
+    };
+    /**
+    * Resolve a dependency.
+    * Target can be a string key or an object.
     * @param {Object} Dependency "class".
     * @returns {Object} Instance
     */
@@ -82,14 +106,18 @@
       if (config == null) {
         throw new Error("Dependency not registered: " + key);
       }
+      target = config.obj;
       if (config.instance.type === "none") {
         return target;
       }
       if (config.instance.type === "lifetime") {
-        instance = this._registry[key];
+        instance = this._instances[key];
       }
       if (instance == null) {
         instance = this._new(target, args);
+        if (config.instance.type === "lifetime") {
+          this._instances[key] = instance;
+        }
       }
       return instance;
     };
