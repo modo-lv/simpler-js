@@ -136,3 +136,16 @@ it "throws the right error on trying to instantiate non-function", ->
 
 	expect (-> dr.resolve "ITest") .to .throw "Cannot create an instance of non-function: \"ITest\""
 
+
+it "calls init method when set", ->
+	dr = new Dr! <<< initMethodName: "_init"
+
+	stub = sinon.spy!
+
+	dr.register "Test", -> @_init = stub; @
+
+	x = dr.resolve "Test"
+
+	expect stub.called .to.equal true
+
+

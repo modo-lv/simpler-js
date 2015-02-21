@@ -1,4 +1,3 @@
 **/.idea/
-**/node_modules/chai
-**/node_modules/mocha
+node_modules/
 .bin/

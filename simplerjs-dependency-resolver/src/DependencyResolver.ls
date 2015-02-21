@@ -13,6 +13,13 @@ class DependencyResolver
 		*/
 		@_instances = {}
 
+
+	/**
+	* Set to a string to call this method on every newly created instance.
+	*/
+	initMethodName: null
+
+
 	/**
 	* Get the dependency registration name (key) for an object
 	*/
@@ -107,6 +114,9 @@ class DependencyResolver
 			instance = @_new(target, args)
 			if config.instance.type == "lifetime"
 				@_instances[key] = instance
+
+		if @initMethodName? and typeof instance[@initMethodName] == 'function'
+			instance[@initMethodName]!
 
 		return instance
 

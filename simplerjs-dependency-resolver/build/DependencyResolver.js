@@ -24,6 +24,10 @@
       this._instances = {};
     }
     /**
+    * Set to a string to call this method on every newly created instance.
+    */
+    prototype.initMethodName = null;
+    /**
     * Get the dependency registration name (key) for an object
     */
     prototype._keyFor = function(target){
@@ -121,6 +125,9 @@
         if (config.instance.type === "lifetime") {
           this._instances[key] = instance;
         }
+      }
+      if (this.initMethodName != null && typeof instance[this.initMethodName] === 'function') {
+        instance[this.initMethodName]();
       }
       return instance;
     };
