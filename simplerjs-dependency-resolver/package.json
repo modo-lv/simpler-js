@@ -1,5 +1,5 @@
 {
-  "name": "dependency-resolver",
+  "name": "simplerjs-dependency-resolver",
   "version": "0.1.0",
   "description": "An AutoFac-like dependency injection manager for JavaScript.",
   "main": "build/app.js",
