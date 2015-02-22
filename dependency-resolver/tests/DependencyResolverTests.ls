@@ -28,6 +28,22 @@ it "only creates a lifetime dependency once", ->
 		expect dr.resolve("Test") .to .equal x
 
 
+it "calls init function on every new instance", !->
+	dr = new Dr <<< initMethodName: "init"
+
+	stub = sinon.spy!
+
+	class Test
+		-> @init = stub
+
+	dr.register "Test", Test .instancePerDependency!
+
+	for from 1 to 3
+		dr.resolve "Test"
+
+	expect stub.callCount .to .equal 3
+
+
 it "only calls init function once on a lifetime dependency", ->
 	dr = new Dr <<< initMethodName: "init"
 
