@@ -149,7 +149,10 @@ it "calls init method when set", ->
 	expect stub.called .to.equal true
 
 
-it "newLifetime() creates a copy with same configuration", ->
+/**
+* newLifetime() creates a new copy with the same config but no instances
+*/
+it "newLifetime() creates a correct copy", ->
 	dr = new Dr
 
 	dr.register "Test", -> @val = 12; @
@@ -158,8 +161,9 @@ it "newLifetime() creates a copy with same configuration", ->
 
 	dr2 = dr.newLifetime!
 
-	obj2 = dr2.resolve "Test"
+	for key, reg of dr._registry
+		for k, val of reg
+			expect val .to .equal dr2._registry[key]?[k]
 
-	expect obj1 .to .not .equal obj2
-	expect obj1.val .to .equal 12
-	expect obj2.val .to .equal 12
+	expect dr2._instances .to .be .empty
+

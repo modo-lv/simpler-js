@@ -11,6 +11,11 @@ it "round() correctly handles precision", ->
 		expect num.round test.0, test.1 .to .equal test.2
 
 
+/**
+* Checks that the random() function is actually inclusive
+* and properly returns minimum / maximum values when the
+* underlying Math.random() returns its minimum / maximum.
+*/
 it "random() reaches minimum and maximum value", ->
 	testData = [
 		[0, 10, 3]

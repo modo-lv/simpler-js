@@ -1,7 +1,12 @@
 DependencyConfig = require "./DependencyConfig"
 DependencyResolution = require "./DependencyResolution"
 
-class DependencyResolver
+module?.exports = class DependencyResolver
+	_registry: {}
+
+	_instances: {}
+
+
 	->
 		/**
 		* Registered dependencies
@@ -148,8 +153,5 @@ class DependencyResolver
 	newLifetime: ~>
 		newLife = new DependencyResolver
 		for key, val of @_registry
-			newLife._registry[key] = ^^@_registry[key]
+			newLife._registry[key] = {} <<< val
 		return newLife
-
-
-if module? then module.exports = DependencyResolver
