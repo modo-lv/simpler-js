@@ -11,7 +11,6 @@ it "registers a function and resolves an instance", ->
 
 	expect instance .to .have .property "name"
 	expect instance.name .to .equal "TestInstance"
-	expect instance .to .have .property "_dr"
 
 
 it "only creates a lifetime dependency once", ->
@@ -60,7 +59,7 @@ it "only calls init function once on a lifetime dependency", ->
 
 it "resolves function with custom parameters", ->
 	class Test
-		(@id, @name) ->
+		(@dr, @id, @name) ->
 			@number = 12
 
 	dr = new Dr
@@ -69,15 +68,16 @@ it "resolves function with custom parameters", ->
 
 	instance = dr.prepare Test .addArguments 1, "One" .resolve!
 
-	expect instance .to .have .property "_dr"
+	expect instance.dr .to .equal dr
 	expect instance.id .to .equal 1
 	expect instance.name .to .equal "One"
 	expect instance.number .to .equal 12
 
 
-it "handles register() calls with arrayed arguments", ->
+it "handles registerAll() calls with arrayed arguments", ->
 	class Test1
 	class Test2
+		(@dr) ->
 
 	dr = new Dr
 
@@ -85,7 +85,7 @@ it "handles register() calls with arrayed arguments", ->
 
 	instance = dr.resolve Test2
 
-	expect instance .to .have .property "_dr"
+	expect instance.dr .to .equal dr
 
 
 it "correctly finds dependency keys", ->
@@ -99,24 +99,24 @@ it "correctly finds dependency keys", ->
 it "correctly handles resolve() with string key", ->
 	dr = new Dr
 
-	dr.register "Test", ->
+	dr.register "Test", (@dr) ->
 	inst = dr.resolve "Test"
 
 	expect inst .to .be .an 'object'
-	expect inst .to .have .property '_dr'
+	expect inst.dr .to .equal dr
 
 
 it "correctly handles resolveAll() with string keys", ->
 	dr = new Dr
 
 	dr.registerAll [
-		["Test", ->]
+		["Test", (@dr)->]
 	]
 
 	inst = dr.resolve "Test"
 
 	expect inst .to .be .an 'object'
-	expect inst._dr.constructor.displayName .to .equal "DependencyResolver"
+	expect inst.dr .to .equal dr
 
 
 it "handles lifetime instances", ->
@@ -221,3 +221,15 @@ it "newLifetime() shouldn't copy methods", !->
 
 	for own name, property of dr2 when typeof property == 'function'
 		expect property, name .to .not .equal dr1[name]
+
+
+it "throws error on circular dependencies", !->
+	dr = new Dr
+
+	dr.register "Test1", class Test1
+		($dr) -> $dr.resolve "Test2"
+
+	dr.register "Test2", class Test2
+		($dr) -> $dr.resolve "Test1"
+
+	expect (-> dr.resolve "Test1") .to .throw "Circular dependency"

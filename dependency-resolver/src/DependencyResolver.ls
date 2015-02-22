@@ -2,27 +2,37 @@ DependencyConfig = require "./DependencyConfig"
 DependencyResolution = require "./DependencyResolution"
 
 module?.exports = class DependencyResolver
+	/**
+	* Registered dependencies
+	*/
 	_registry: {}
 
+	/**
+	* Created instances
+	*/
 	_instances: {}
 
-
-	->
-		/**
-		* Registered dependencies
-		*/
-		@_registry = {}
-
-		/**
-		* Created instances
-		*/
-		@_instances = {}
+	/**
+	* Ongoing resolutions. Used to check of circular dependencies.
+	*/
+	_resolutionStack: {}
 
 
 	/**
 	* Set to a string to call this method on every newly created instance.
 	*/
 	initMethodName: null
+
+
+	/**
+	* Constructor
+	*/
+	->
+		@_registry = {}
+		@_instances = {}
+		@_resolutionStack = {}
+
+
 
 
 	/**
@@ -40,8 +50,11 @@ module?.exports = class DependencyResolver
 	* @param {Array} args - Arguments to pass to the constructor
 	*/
 	_new: (func, args) ~>
+		#Add this resolver as the first argument
+		args = args ? []
+		args.unshift this
+
 		new (((a) -> func.apply(this, a)) <<< {prototype: func.prototype})(args)
-			.._dr = this
 
 
 	/**
@@ -100,6 +113,14 @@ module?.exports = class DependencyResolver
 			[args, target] = [target.arguments, target.obj]
 
 		key = @_keyFor target
+
+		# Check for circular dependencies
+		if @_resolutionStack[key]?
+			throw new Error "Circular dependency detected! Tried to start resolution of
+				a dependency that's already in the process of resolving: #{key}."
+
+		@_resolutionStack[key] = key
+
 		config = @_registry[key]
 
 		if not config?
@@ -127,6 +148,7 @@ module?.exports = class DependencyResolver
 			if @initMethodName? and typeof instance[@initMethodName] == 'function'
 				instance[@initMethodName]!
 
+		delete @_resolutionStack[key]
 		return instance
 
 

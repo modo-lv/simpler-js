@@ -7,8 +7,25 @@
     module.exports = DependencyResolver = (function(){
       DependencyResolver.displayName = 'DependencyResolver';
       var prototype = DependencyResolver.prototype, constructor = DependencyResolver;
+      /**
+      * Registered dependencies
+      */
       prototype._registry = {};
+      /**
+      * Created instances
+      */
       prototype._instances = {};
+      /**
+      * Ongoing resolutions. Used to check of circular dependencies.
+      */
+      prototype._resolutionStack = {};
+      /**
+      * Set to a string to call this method on every newly created instance.
+      */
+      prototype.initMethodName = null;
+      /**
+      * Constructor
+      */;
       function DependencyResolver(){
         this.newLifetime = bind$(this, 'newLifetime', prototype);
         this.getConfigFor = bind$(this, 'getConfigFor', prototype);
@@ -18,19 +35,10 @@
         this.registerAll = bind$(this, 'registerAll', prototype);
         this.register = bind$(this, 'register', prototype);
         this._new = bind$(this, '_new', prototype);
-        /**
-        * Registered dependencies
-        */
         this._registry = {};
-        /**
-        * Created instances
-        */
         this._instances = {};
+        this._resolutionStack = {};
       }
-      /**
-      * Set to a string to call this method on every newly created instance.
-      */
-      prototype.initMethodName = null;
       /**
       * Get the dependency registration name (key) for an object
       */
@@ -48,12 +56,14 @@
       * @param {Array} args - Arguments to pass to the constructor
       */
       prototype._new = function(func, args){
-        var x$, ref$;
-        x$ = new (ref$ = function(a){
+        var ref$;
+        args = args != null
+          ? args
+          : [];
+        args.unshift(this);
+        return new (ref$ = function(a){
           return func.apply(this, a);
         }, ref$.prototype = func.prototype, ref$)(args);
-        x$._dr = this;
-        return x$;
       };
       /**
       * Register a new dependency. There are several ways this function can be called:
@@ -110,6 +120,10 @@
           ref$ = [target.arguments, target.obj], args = ref$[0], target = ref$[1];
         }
         key = this._keyFor(target);
+        if (this._resolutionStack[key] != null) {
+          throw new Error("Circular dependency detected! Tried to start resolution ofa dependency that's already in the process of resolving: " + key + ".");
+        }
+        this._resolutionStack[key] = key;
         config = this._registry[key];
         if (config == null) {
           throw new Error("Dependency not registered: " + key);
@@ -134,6 +148,7 @@
             instance[this.initMethodName]();
           }
         }
+        delete this._resolutionStack[key];
         return instance;
       };
       /**
