@@ -1,0 +1,30 @@
+{
+  "name": "simplerjs-numbers",
+  "version": "0.0.1",
+  "description": "Convenience and utility functions for number and math related functionality.",
+  "main": "build/numbers.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "math",
+    "number",
+    "numbers",
+    "decimal",
+    "precision"
+  ],
+  "author": "modo_lv",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/modo-lv/simpler-js/tree/master/numbers"
+  },
+  "optionalDependencies": {
+    "chai": "^2.0.0",
+    "mocha": "^2.1.0",
+    "sinon": "^1.12.2"
+  },
+  "devDependencies": {}
+}
+
+
