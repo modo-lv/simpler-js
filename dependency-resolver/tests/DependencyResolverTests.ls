@@ -197,7 +197,7 @@ it "calls init method when set", ->
 * newLifetime() creates a new copy with the same config but no instances
 */
 it "newLifetime() creates a correct copy", ->
-	dr = new Dr
+	dr = new Dr <<< initMethodName: "initMethod"
 
 	dr.register "Test", -> @val = 12; @
 
@@ -210,4 +210,5 @@ it "newLifetime() creates a correct copy", ->
 			expect val, "_registry[#{k}]" .to .equal dr2._registry[key]?[k]
 
 	expect dr2._instances .to .be .empty
-
+	expect dr2.initMethodName .to .equal dr.initMethodName
+		.and .to .equal "initMethod"

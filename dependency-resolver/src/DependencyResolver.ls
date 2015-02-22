@@ -160,7 +160,11 @@ module?.exports = class DependencyResolver
 	* Create a new instance of DependencyResolver with the same configuration
 	*/
 	newLifetime: ~>
-		newLife = new DependencyResolver
+		newLife = new DependencyResolver <<< this
+
+		newLife._instances = {}
+
 		for key, val of @_registry
 			newLife._registry[key] = {} <<< val
+
 		return newLife

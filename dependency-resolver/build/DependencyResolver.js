@@ -168,7 +168,8 @@
       */
       prototype.newLifetime = function(){
         var newLife, key, ref$, val;
-        newLife = new DependencyResolver;
+        newLife = import$(new DependencyResolver, this);
+        newLife._instances = {};
         for (key in ref$ = this._registry) {
           val = ref$[key];
           newLife._registry[key] = import$({}, val);
