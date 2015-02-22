@@ -167,9 +167,14 @@
       * Create a new instance of DependencyResolver with the same configuration
       */
       prototype.newLifetime = function(){
-        var newLife, key, ref$, val;
-        newLife = import$(new DependencyResolver, this);
-        newLife._instances = {};
+        var newLife, name, prop, ref$, key, val, own$ = {}.hasOwnProperty;
+        newLife = new DependencyResolver;
+        for (name in this) if (own$.call(this, name)) {
+          prop = this[name];
+          if (prop === null || ((ref$ = typeof prop) === 'string' || ref$ === 'number' || ref$ === 'undefined')) {
+            newLife[name] = prop;
+          }
+        }
         for (key in ref$ = this._registry) {
           val = ref$[key];
           newLife._registry[key] = import$({}, val);

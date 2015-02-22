@@ -162,10 +162,13 @@ module?.exports = class DependencyResolver
 	* Create a new instance of DependencyResolver with the same configuration
 	*/
 	newLifetime: ~>
-		newLife = new DependencyResolver <<< this
+		newLife = new DependencyResolver
 
-		newLife._instances = {}
+		# Copy simple values
+		for own name, prop of this when prop == null or typeof prop in ['string','number','undefined']
+			newLife[name] = prop
 
+		# Clone registry
 		for key, val of @_registry
 			newLife._registry[key] = {} <<< val
 

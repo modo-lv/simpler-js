@@ -210,3 +210,14 @@ it "newLifetime() creates a correct copy", ->
 	expect dr2._instances .to .be .empty
 	expect dr2.initMethodName .to .equal dr.initMethodName
 		.and .to .equal "initMethod"
+
+
+/**
+* newLifetime() should not copy over methods (since they're bound to an instance)
+*/
+it "newLifetime() shouldn't copy methods", !->
+	dr1 = new Dr
+	dr2 = dr1.newLifetime!
+
+	for own name, property of dr2 when typeof property == 'function'
+		expect property, name .to .not .equal dr1[name]
