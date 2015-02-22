@@ -116,7 +116,9 @@ module?.exports = class DependencyResolver
 		if not instance?
 			if typeof target != 'function'
 				throw new Error "Cannot create an instance of non-function: #{key}"
+
 			instance = @_new(target, args)
+
 			if config.instance.type == "lifetime"
 				@_instances[key] = instance
 

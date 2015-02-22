@@ -19,16 +19,14 @@ class DependencyResolution
 		return this
 
 
-	resolve: ~>
-		return @dr.resolve this
+	resolve: ~> @dr.resolve this
 
 
 	/**
 	* Alias for addArguments(...).resolve()
 	* @param {...} Arguments to pass to the constructor.
 	*/
-	create: ~>
-		@addArguments ... .resolve!
+	create: ~> @addArguments ... .resolve!
 
 
 

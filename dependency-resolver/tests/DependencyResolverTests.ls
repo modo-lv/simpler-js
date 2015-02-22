@@ -1,5 +1,3 @@
-require "./test-setup"
-
 ... <- describe "DependencyResolver"
 
 it "registers a function and resolves an instance", ->
