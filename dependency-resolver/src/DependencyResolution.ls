@@ -23,4 +23,13 @@ class DependencyResolution
 		return @dr.resolve this
 
 
+	/**
+	* Alias for addArguments(...).resolve()
+	* @param {...} Arguments to pass to the constructor.
+	*/
+	create: ~>
+		@addArguments ... .resolve!
+
+
+
 if module? then module.exports = DependencyResolution

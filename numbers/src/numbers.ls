@@ -6,7 +6,7 @@ numbers =
 	* @returns {Number}
 	*/
 	round: (number, precision = 0) ->
-		numbers.withPrecision(Math.round, number, precision);
+		numbers.withPrecision Math.round, number, precision
 
 	/**
 	* Same as Math.floor, but with optional precision
@@ -31,7 +31,7 @@ numbers =
 	 */
 	withPrecision : (func, number, precision = 0) ->
 		power = 10 ** precision
-		func(number * power) / power
+		(func number * power) / power
 
 
 	/**

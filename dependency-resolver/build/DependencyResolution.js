@@ -15,6 +15,7 @@
     function DependencyResolution(dr, obj){
       this.dr = dr;
       this.obj = obj;
+      this.create = bind$(this, 'create', prototype);
       this.resolve = bind$(this, 'resolve', prototype);
       this.addArguments = bind$(this, 'addArguments', prototype);
       this.arguments = [];
@@ -27,6 +28,13 @@
     };
     prototype.resolve = function(){
       return this.dr.resolve(this);
+    };
+    /**
+    * Alias for addArguments(...).resolve()
+    * @param {...} Arguments to pass to the constructor.
+    */
+    prototype.create = function(){
+      return this.addArguments.apply(this, arguments).resolve();
     };
     return DependencyResolution;
   }());
