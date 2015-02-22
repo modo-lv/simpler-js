@@ -129,10 +129,10 @@
           if (config.instance.type === "lifetime") {
             this._instances[key] = instance;
           }
-        }
-        config.beforeInit(instance);
-        if (this.initMethodName != null && typeof instance[this.initMethodName] === 'function') {
-          instance[this.initMethodName]();
+          config.beforeInit(instance);
+          if (this.initMethodName != null && typeof instance[this.initMethodName] === 'function') {
+            instance[this.initMethodName]();
+          }
         }
         return instance;
       };

@@ -16,6 +16,34 @@ it "registers a function and resolves an instance", ->
 	expect instance .to .have .property "_dr"
 
 
+it "only creates a lifetime dependency once", ->
+	dr = new Dr
+	class Test
+		-> @value = Math.random!
+
+	dr.register "Test", Test
+
+	x = dr.resolve "Test"
+	for from 1 to 4
+		expect dr.resolve("Test") .to .equal x
+
+
+it "only calls init function once on a lifetime dependency", ->
+	dr = new Dr <<< initMethodName: "init"
+
+	stub = sinon.spy!
+
+	class Test
+		-> @init = stub
+
+	dr.register "Test", Test
+
+	for from 1 to 5
+		dr.resolve "Test"
+
+	expect stub.callCount .to .equal 1
+
+
 it "resolves function with custom parameters", ->
 	class Test
 		(@id, @name) ->

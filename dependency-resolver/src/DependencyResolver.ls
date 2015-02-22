@@ -120,10 +120,10 @@ module?.exports = class DependencyResolver
 			if config.instance.type == "lifetime"
 				@_instances[key] = instance
 
-		config.beforeInit instance
+			config.beforeInit instance
 
-		if @initMethodName? and typeof instance[@initMethodName] == 'function'
-			instance[@initMethodName]!
+			if @initMethodName? and typeof instance[@initMethodName] == 'function'
+				instance[@initMethodName]!
 
 		return instance
 
