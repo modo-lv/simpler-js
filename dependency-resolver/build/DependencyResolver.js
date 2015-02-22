@@ -11,6 +11,7 @@
       prototype._instances = {};
       function DependencyResolver(){
         this.newLifetime = bind$(this, 'newLifetime', prototype);
+        this.getConfigFor = bind$(this, 'getConfigFor', prototype);
         this.prepare = bind$(this, 'prepare', prototype);
         this.resolveAll = bind$(this, 'resolveAll', prototype);
         this.resolve = bind$(this, 'resolve', prototype);
@@ -129,6 +130,7 @@
             this._instances[key] = instance;
           }
         }
+        config.beforeInit(instance);
         if (this.initMethodName != null && typeof instance[this.initMethodName] === 'function') {
           instance[this.initMethodName]();
         }
@@ -154,6 +156,12 @@
       */
       prototype.prepare = function(target){
         return new DependencyResolution(this, target);
+      };
+      /**
+      * Get dependency configuration for a given target
+      */
+      prototype.getConfigFor = function(target){
+        return this._registry[this._keyFor(target)];
       };
       /**
       * Create a new instance of DependencyResolver with the same configuration

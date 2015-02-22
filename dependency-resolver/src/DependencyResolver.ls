@@ -120,6 +120,8 @@ module?.exports = class DependencyResolver
 			if config.instance.type == "lifetime"
 				@_instances[key] = instance
 
+		config.beforeInit instance
+
 		if @initMethodName? and typeof instance[@initMethodName] == 'function'
 			instance[@initMethodName]!
 
@@ -146,6 +148,13 @@ module?.exports = class DependencyResolver
 	*/
 	prepare: (target) ~>
 		new DependencyResolution this, target
+
+
+	/**
+	* Get dependency configuration for a given target
+	*/
+	getConfigFor: (target) ~>
+		return @_registry[@_keyFor target]
 
 	/**
 	* Create a new instance of DependencyResolver with the same configuration

@@ -163,7 +163,7 @@ it "newLifetime() creates a correct copy", ->
 
 	for key, reg of dr._registry
 		for k, val of reg
-			expect val .to .equal dr2._registry[key]?[k]
+			expect val, "_registry[#{k}]" .to .equal dr2._registry[key]?[k]
 
 	expect dr2._instances .to .be .empty
 
