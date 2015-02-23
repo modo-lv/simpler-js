@@ -1,5 +1,5 @@
 global <<< require "chai"
 
-global.Dr = require "../build/DependencyResolver"
+global.Dr = require "../build/Resolver"
 
 global.sinon = require "sinon"

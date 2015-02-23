@@ -1,14 +1,23 @@
-module?.exports = class DependencyConfig
-	(@obj) ->
-		@instance =	type: "lifetime"
-		@beforeInit = ->
-
-
+module?.exports = class Config
 	instance:
 		/**
 		* Instance creation lifetime scope.
 		*/
 		type: "lifetime"
+
+
+	resolve:
+		withRequire: false
+
+
+	(@obj) ->
+		@instance =
+			type: "lifetime"
+
+		@resolve =
+			withRequire: false
+
+		@beforeInit = ->
 
 
 	/**

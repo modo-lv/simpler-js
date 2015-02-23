@@ -26,7 +26,7 @@ class DependencyResolution
 	* Alias for addArguments(...).resolve()
 	* @param {...} Arguments to pass to the constructor.
 	*/
-	create: ~> @addArguments ... .resolve!
+	createWith: ~> @addArguments ... .resolve!
 
 
 

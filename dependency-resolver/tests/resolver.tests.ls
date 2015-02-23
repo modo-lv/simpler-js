@@ -91,9 +91,9 @@ it "handles registerAll() calls with arrayed arguments", ->
 it "correctly finds dependency keys", ->
 	dr = new Dr
 
-	expect dr._keyFor "Test1" .to .equal '"Test1"'
-	expect dr._keyFor -> .to .be .a 'function'
-	expect dr._keyFor a:1,b:2 .to .equal '{"a":1,"b":2}'
+	expect dr._keyOf "Test1" .to .equal '"Test1"'
+	expect dr._keyOf -> .to .be .a 'function'
+	expect dr._keyOf a:1,b:2 .to .equal '{"a":1,"b":2}'
 
 
 it "correctly handles resolve() with string key", ->
@@ -205,7 +205,7 @@ it "newLifetime() creates a correct copy", ->
 
 	for key, reg of dr._registry
 		for k, val of reg
-			expect val, "_registry[#{k}]" .to .equal dr2._registry[key]?[k]
+			expect val, "_registry.#{key}.#{k}" .to .equal dr2._registry[key][k]
 
 	expect dr2._instances .to .be .empty
 	expect dr2.initMethodName .to .equal dr.initMethodName
@@ -233,3 +233,18 @@ it "throws error on circular dependencies", !->
 		($dr) -> $dr.resolve "Test1"
 
 	expect (-> dr.resolve "Test1") .to .throw "Circular dependency"
+
+
+it "uses require() to resolve deps with relevant config", !->
+	dr = new Dr
+
+	dr.registerRequire "Test1", "mocha"
+
+	dr.register "Test2", "chai"
+		.resolve.withRequire = true
+
+	dr._require = sinon.spy!
+
+	dr.resolveAll "Test1", "Test2"
+
+	expect dr._require.callCount .to .equal 2

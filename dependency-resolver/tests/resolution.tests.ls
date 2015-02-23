@@ -1,6 +1,6 @@
 ... <- describe "DependencyResolution"
 
-it "should call init method when using create()", !->
+it "should call init method when using createWith()", !->
 	dr = new Dr <<< initMethodName: "init"
 
 	spy = sinon.spy!
@@ -11,6 +11,6 @@ it "should call init method when using create()", !->
 	dr.register "Test", Test .instancePerDependency!
 
 	for from 1 to 3
-		dr.prepare "Test" .create!
+		dr.prepare "Test" .createWith!
 
 	expect spy.callCount .to .equal 3

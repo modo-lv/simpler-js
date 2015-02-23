@@ -1,8 +1,8 @@
 {
   "name": "simplerjs-dependency-resolver",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "An AutoFac-like dependency injection manager for JavaScript.",
-  "main": "build/app.js",
+  "main": "build/resolver.js",
   "author": "modo_lv",
   "license": "ISC",
   "repository": {
@@ -14,5 +14,10 @@
     "mocha": "^2.1.0",
     "sinon": "^1.12.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "LiveScript": "^1.3.1",
+    "del": "^1.1.1",
+    "gulp": "^3.8.11",
+    "gulp-livescript": "^2.3.0"
+  }
 }
